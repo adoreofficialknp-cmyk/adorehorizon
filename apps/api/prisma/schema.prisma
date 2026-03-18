@@ -1,0 +1,245 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x", "linux-musl"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String?  @unique
+  phone     String?  @unique
+  password  String?
+  role      String   @default("user") // "user" | "admin"
+  picture   String?
+  ringSize  String?  // e.g. "12", "13.5"
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders    Order[]
+  reviews   Review[]
+
+  @@map("users")
+}
+
+model Category {
+  id            String        @id @default(cuid())
+  name          String        @unique
+  slug          String        @unique
+  description   String?
+  imageUrl      String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  subcategories Subcategory[]
+  products      Product[]
+
+  @@map("categories")
+}
+
+model Subcategory {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String
+  description String?
+  imageUrl    String?
+  categoryId  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category    Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  products    Product[]
+
+  @@unique([slug, categoryId])
+  @@map("subcategories")
+}
+
+model Product {
+  id            String   @id @default(cuid())
+  name          String
+  slug          String   @unique
+  description   String?
+  price         Float
+  comparePrice  Float?
+  images        String[] // Cloudinary URLs
+  categoryId    String?
+  subcategoryId String?
+  color         String?
+  stock         Int      @default(0)
+  featured      Boolean  @default(false)
+  active        Boolean  @default(true)
+  rating        Float    @default(0)
+  reviewCount   Int      @default(0)
+  weight        Float?
+  sku           String?  @unique
+  tags          String[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  category      Category?    @relation(fields: [categoryId], references: [id])
+  subcategory   Subcategory? @relation(fields: [subcategoryId], references: [id])
+  orderItems    OrderItem[]
+  reviews       Review[]
+
+  @@map("products")
+}
+
+model HomepageSection {
+  id          String   @id @default(cuid())
+  type        String   // "banner_slider" | "festivals" | "shop_by_color" | "featured_products" | "custom_banner"
+  title       String?
+  data        Json     @default("{}")
+  orderIndex  Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("homepage_sections")
+}
+
+model Banner {
+  id          String   @id @default(cuid())
+  title       String?
+  description String?
+  imageUrl    String
+  mobileImageUrl String?
+  link        String?
+  type        String   @default("slider") // "slider" | "banner" | "promotional"
+  position    String   @default("top")    // "top" | "mid" | "bottom"
+  active      Boolean  @default(true)
+  orderIndex  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("banners")
+}
+
+model Media {
+  id        String   @id @default(cuid())
+  url       String
+  publicId  String   // Cloudinary public_id
+  type      String   @default("image") // "image" | "video"
+  filename  String?
+  size      Int?
+  width     Int?
+  height    Int?
+  folder    String?
+  createdAt DateTime @default(now())
+
+  @@map("media")
+}
+
+model Order {
+  id               String      @id @default(cuid())
+  orderId          String      @unique // Human-readable order ID e.g. ORD-20241201-001
+  userId           String?
+  customerName     String
+  customerEmail    String
+  customerPhone    String
+  shippingAddress  Json
+  items            Json
+  subtotal         Float
+  discountAmount   Float       @default(0)
+  shippingCost     Float       @default(0)
+  totalAmount      Float
+  couponCode       String?
+  paymentMethod    String      // "razorpay" | "cod"
+  paymentStatus    String      @default("pending") // "pending" | "paid" | "failed" | "refunded" | "cod"
+  orderStatus      String      @default("order_placed")
+  razorpayOrderId  String?
+  razorpayPaymentId String?
+  razorpaySignature String?
+  notes            String?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  user             User?       @relation(fields: [userId], references: [id])
+  orderItems       OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String?
+  name      String
+  price     Float
+  quantity  Int
+  image     String?
+
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product? @relation(fields: [productId], references: [id])
+
+  @@map("order_items")
+}
+
+model Coupon {
+  id              String   @id @default(cuid())
+  code            String   @unique
+  discountType    String   // "percentage" | "fixed"
+  discountValue   Float
+  minOrderAmount  Float    @default(0)
+  maxUses         Int?
+  usedCount       Int      @default(0)
+  active          Boolean  @default(true)
+  expiresAt       DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("coupons")
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  productId String
+  userId    String?
+  rating    Int
+  title     String?
+  body      String?
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@map("reviews")
+}
+
+model Settings {
+  id                          String   @id @default(cuid())
+  storeName                   String   @default("ADORE Jewellery")
+  storeEmail                  String?
+  storePhone                  String?
+  storeAddress                String?
+  currency                    String   @default("INR")
+  taxRate                     Float    @default(0)
+  shippingCost                Float    @default(0)
+  freeShippingThreshold       Float    @default(0)
+  razorpayKeyId               String?
+  razorpayKeySecret           String?
+  emailNotifications          Boolean  @default(true)
+  orderConfirmationEmail      Boolean  @default(true)
+  shippingNotificationEmail   Boolean  @default(true)
+  appDescription              String?
+  createdAt                   DateTime @default(now())
+  updatedAt                   DateTime @updatedAt
+
+  @@map("settings")
+}
+
+model OtpSession {
+  id         String   @id @default(cuid())
+  phone      String
+  otp        String
+  expiresAt  DateTime
+  verified   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@map("otp_sessions")
+}
