@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Poppins", sans-serif;
+  
+  /* Light Mode Palette (Soft Pink Luxury – GIVA Style) */
+  --color-blush: #FFF1F1;
+  --color-surface-light: #FFFFFF;
+  --color-dusty-rose: #E8A9A9;
+  --color-dusty-rose-hover: #D88C9A;
+  --color-accent-light: #F3C5C5;
+  --color-text-primary-light: #000000; /* Pure Black */
+  --color-text-secondary-light: #000000; /* Pure Black for maximum visibility */
+  --color-border-light: #F0DADA;
+  
+  /* Dark Mode Palette (Premium Rose Dark) */
+  --color-dark-bg: #121212;
+  --color-dark-surface: #1E1E1E;
+  --color-primary-pink-dark: #F2A7B3;
+  --color-primary-pink-dark-hover: #FFB6C1;
+  --color-accent-dark: #D88C9A;
+  --color-text-primary-dark: #F5F5F5;
+  --color-text-secondary-dark: #B8B8B8;
+  --color-border-dark: #2A2A2A;
+}
+
+@layer base {
+  body {
+    @apply transition-colors duration-500 font-sans antialiased;
+  }
+  
+  .light {
+    @apply bg-blush text-text-primary-light;
+  }
+  
+  .dark {
+    @apply bg-dark-bg text-text-primary-dark;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif font-medium tracking-tight;
+  }
+}
+
+.text-contrast {
+  @apply text-dusty-rose dark:text-primary-pink-dark;
+}
+
+.glass-card {
+  @apply backdrop-blur-md border shadow-sm;
+}
+
+.dark .glass-card {
+  @apply bg-dark-surface border-border-dark;
+}
+
+.light .glass-card {
+  @apply bg-surface-light border-border-light;
+}
+
+.rose-gold-gradient {
+  background: linear-gradient(135deg, var(--color-dusty-rose) 0%, var(--color-dusty-rose-hover) 100%);
+}
+
+.dark .rose-gold-gradient {
+  background: linear-gradient(135deg, var(--color-primary-pink-dark) 0%, var(--color-primary-pink-dark-hover) 100%);
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
