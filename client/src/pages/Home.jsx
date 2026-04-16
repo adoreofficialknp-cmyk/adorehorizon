@@ -253,8 +253,8 @@ export default function Home(){
         ))}
         <div style={{position:'absolute',inset:0,background:C.heroOverlay,zIndex:2}}/>
         {/* CHANGE 2: alignItems center + textAlign center + padding fix */}
-        <div style={{position:'absolute',inset:0,zIndex:3,display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',textAlign:'center',padding:'0 5%'}}>
-          <div key={`${slide}-${theme}`} className="animate-fade-up" style={{maxWidth:480}}>
+        <div className="ai-style-change-1">
+          <div key={`${slide}-${theme}`} className="animate-fade-up">
             <div style={{display:'inline-flex',alignItems:'center',gap:6,background:C.pill,border:`1px solid ${C.pillBorder}`,borderRadius:20,padding:'4px 14px',marginBottom:'clamp(8px,2vw,16px)'}}>
               <span style={{width:6,height:6,borderRadius:'50%',background:C.pillDot,flexShrink:0}}/>
               <span style={{fontSize:10,letterSpacing:'.2em',textTransform:'uppercase',color:C.pillText,fontWeight:700}}>{s.tag}</span>
