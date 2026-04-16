@@ -262,7 +262,11 @@
 @keyframes countdown-pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
 
 .spinner { animation: spin .8s linear infinite; }
-.animate-fade-up { animation: fadeUp .4s cubic-bezier(.25,.1,.25,1) forwards; }
+.animate-fade-up { animation: fadeUp .4s cubic-bezier(.25,.1,.25,1) forwards; display: flex; flex-direction: column; align-items: flex-end; text-align: right; max-width: 480px; }
+
+.ai-style-change-1 { position: absolute; top: 50%; transform: translateY(-50%); right: 20px; left: auto; width: auto; max-width: 90%; padding: 0 20px; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; z-index: 3; }
+
+.animate-fade-up > div[style*="display: flex"] { display: flex !important; justify-content: flex-end !important; gap: 16px; width: 100%; }
 .animate-fade-in { animation: fadeIn .3s ease forwards; }
 
 .skeleton {
